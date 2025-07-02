@@ -1,0 +1,11 @@
+
+
+CREATE TABLE IF NOT EXISTS orders (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  order_number VARCHAR(255) NOT NULL,
+  price DECIMAL(10, 2) NOT NULL,
+  sku_code VARCHAR(100) NOT NULL,
+  quantity INT NOT NULL
+);
+
+
