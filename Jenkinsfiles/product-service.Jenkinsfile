@@ -9,6 +9,7 @@ pipeline {
         MAVEN_HOME = tool 'Maven 3.9.6'
     }
 
+
     stages {
         stage('Clone Repository') {
             steps {
