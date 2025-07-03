@@ -28,12 +28,6 @@ pipeline {
             }
         }
 
-        stage('Connect to Network') {
-            steps {
-                bat 'docker network connect infra_default inventory-service || echo already connected'
-            }
-        }
-
         stage('Run Container') {
             steps {
                 bat '''
