@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git 'https://github.com/BALRAJ1313/springboot-microservices.git'
+                git branch: 'main', url: 'https://github.com/BALRAJ1313/springboot-microservices.git'
             }
         }
 
