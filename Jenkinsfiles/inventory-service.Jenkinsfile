@@ -32,7 +32,10 @@ pipeline {
 
         stage('Deploy with Docker Compose') {
               steps {
-                    bat 'docker-compose -f docker-compose.yml up -d --build inventory-service'
+                            bat '''
+                                docker-compose -f docker-compose.yml up -d --no-recreate mysql
+                                docker-compose -f docker-compose.yml up -d --build inventory-service
+                            '''
                   }
              }
 
