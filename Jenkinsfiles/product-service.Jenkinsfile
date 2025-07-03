@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+        options {
+            shell 'C:\\Program Files\\Git\\bin\\bash.exe'
+        }
+
     environment {
         MAVEN_HOME = tool 'Maven 3.9.6'
     }
