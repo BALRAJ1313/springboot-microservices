@@ -28,18 +28,13 @@ pipeline {
             }
         }
 
-        stage('Connect to Network') {
-            steps {
-                bat 'docker network connect infra_default order-service || echo already connected'
-            }
-        }
-
         stage('Run Container') {
             steps {
                 bat '''
                     docker stop order-service || echo already stopped
                     docker rm order-service || echo already removed
-                    docker run -d --name order-service --network infra_default -p 8081:8081 order-service:latest
+                    docker run -d --name order-service -p 8082:8082 order-service:latest
+                    docker network connect infra_default order-service || echo already connected
                 '''
             }
         }

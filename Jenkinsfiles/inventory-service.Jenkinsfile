@@ -39,7 +39,8 @@ pipeline {
                 bat '''
                     docker stop inventory-service || echo already stopped
                     docker rm inventory-service || echo already removed
-                    docker run -d --name inventory-service --network infra_default -p 8081:8081 inventory-service:latest
+                    docker run -d --name inventory-service -p 8083:8083 inventory-service:latest
+                    docker network connect infra_default inventory-service || echo already connected
                 '''
             }
         }
