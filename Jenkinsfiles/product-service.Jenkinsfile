@@ -31,13 +31,9 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Deploy with Docker Compose') {
             steps {
-                script {
-                    bat 'docker stop product-service || exit 0'
-                    bat 'docker rm product-service || exit 0'
-                    bat 'docker run -d --name product-service -p 8081:8081 product-service:latest'
-                }
+                bat 'docker-compose -f docker-compose.yml up -d --build product-service'
             }
         }
     }
