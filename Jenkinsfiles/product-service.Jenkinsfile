@@ -28,19 +28,14 @@ pipeline {
             }
         }
 
-        stage('Connect to Network') {
-            steps {
-                bat 'docker network connect infra_default product-service || echo already connected'
-            }
-        }
-
         stage('Run Container') {
             steps {
                 bat '''
-                    docker stop product-service || echo already stopped
-                    docker rm product-service || echo already removed
-                    docker run -d --name product-service --network infra_default -p 8081:8081 product-service:latest
-                '''
+                     docker stop product-service || echo already stopped
+                     docker rm product-service || echo already removed
+                     docker run -d --name product-service -p 8081:8081 product-service:latest
+                     docker network connect infra_default product-service || echo already connected
+                    '''
             }
         }
     }
