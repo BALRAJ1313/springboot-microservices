@@ -15,7 +15,7 @@ pipeline {
         stage('Build Order Service') {
             steps {
                 dir('order-service') {
-                    sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
+                    bat "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
                 }
             }
         }
@@ -33,11 +33,9 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh '''
-                      docker stop order-service || true
-                      docker rm order-service || true
-                      docker run -d --name order-service -p 8082:8082 order-service:latest
-                    '''
+                    bat 'docker stop order-service || exit 0'
+                    bat 'docker rm order-service || exit 0'
+                    bat 'docker run -d --name order-service -p 8082:8082 order-service:latest'
                 }
             }
         }

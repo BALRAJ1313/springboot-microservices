@@ -15,7 +15,7 @@ pipeline {
         stage('Build Inventory Service') {
             steps {
                 dir('inventory-service') {
-                    sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
+                    bat "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
                 }
             }
         }
@@ -33,11 +33,9 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh '''
-                      docker stop inventory-service || true
-                      docker rm inventory-service || true
-                      docker run -d --name inventory-service -p 8083:8083 inventory-service:latest
-                    '''
+                    bat 'docker stop inventory-service || exit 0'
+                    bat 'docker rm inventory-service || exit 0'
+                    bat 'docker run -d --name inventory-service -p 8083:8083 inventory-service:latest'
                 }
             }
         }

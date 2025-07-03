@@ -16,7 +16,7 @@ pipeline {
         stage('Build Product Service') {
             steps {
                 dir('product-service') {
-                    sh "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
+                    bat "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
                 }
             }
         }
@@ -34,11 +34,9 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 script {
-                    sh '''
-                      docker stop product-service || true
-                      docker rm product-service || true
-                      docker run -d --name product-service -p 8081:8081 product-service:latest
-                    '''
+                    bat 'docker stop product-service || exit 0'
+                    bat 'docker rm product-service || exit 0'
+                    bat 'docker run -d --name product-service -p 8081:8081 product-service:latest'
                 }
             }
         }
