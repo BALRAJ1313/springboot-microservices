@@ -5,7 +5,6 @@ pipeline {
         MAVEN_HOME = tool 'Maven 3.9.6'
     }
 
-
     stages {
         stage('Clone Repository') {
             steps {
@@ -24,16 +23,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('product-service') {
-                    script {
-                        dockerImage = docker.build("product-service:latest")
-                    }
+                    bat 'docker build -t product-service:latest .'
                 }
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Connect to Network') {
             steps {
-                bat 'docker-compose -f docker-compose.yml up -d --build product-service'
+                bat 'docker network connect infra_default product-service || echo already connected'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                bat '''
+                    docker stop product-service || echo already stopped
+                    docker rm product-service || echo already removed
+                    docker run -d --name product-service --network infra_default -p 8081:8081 product-service:latest
+                '''
             }
         }
     }

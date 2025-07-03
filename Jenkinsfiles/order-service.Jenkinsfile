@@ -23,16 +23,24 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('order-service') {
-                    script {
-                        dockerImage = docker.build("order-service:latest")
-                    }
+                    bat 'docker build -t order-service:latest .'
                 }
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Connect to Network') {
             steps {
-                bat 'docker-compose -f docker-compose.yml up -d --build order-service'
+                bat 'docker network connect infra_default order-service || echo already connected'
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                bat '''
+                    docker stop order-service || echo already stopped
+                    docker rm order-service || echo already removed
+                    docker run -d --name order-service --network infra_default -p 8081:8081 order-service:latest
+                '''
             }
         }
     }

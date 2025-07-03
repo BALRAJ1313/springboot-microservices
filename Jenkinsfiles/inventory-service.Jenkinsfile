@@ -23,31 +23,25 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 dir('inventory-service') {
-                    script {
-                        dockerImage = docker.build("inventory-service:latest")
-                    }
+                    bat 'docker build -t inventory-service:latest .'
                 }
             }
         }
 
-        stage('Deploy with Docker Compose') {
-              steps {
-                            bat '''
-                                docker-compose -f docker-compose.yml up -d --no-recreate ecommerce-services-mysql
-                                docker-compose -f docker-compose.yml up -d --build inventory-service
-                            '''
-                  }
-             }
+        stage('Connect to Network') {
+            steps {
+                bat 'docker network connect infra_default inventory-service || echo already connected'
+            }
+        }
 
-//         stage('Run Docker Container') {
-//             steps {
-//                 script {
-//                     bat 'docker stop inventory-service || exit 0'
-//                     bat 'docker rm inventory-service || exit 0'
-//                     bat 'docker run -d --name inventory-service -p 8083:8083 inventory-service:latest'
-//                 }
-//             }
-//         }
-
+        stage('Run Container') {
+            steps {
+                bat '''
+                    docker stop inventory-service || echo already stopped
+                    docker rm inventory-service || echo already removed
+                    docker run -d --name inventory-service --network infra_default -p 8081:8081 inventory-service:latest
+                '''
+            }
+        }
     }
 }
