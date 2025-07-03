@@ -30,13 +30,9 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Deploy with Docker Compose') {
             steps {
-                script {
-                    bat 'docker stop order-service || exit 0'
-                    bat 'docker rm order-service || exit 0'
-                    bat 'docker run -d --name order-service -p 8082:8082 order-service:latest'
-                }
+                bat 'docker-compose -f docker-compose.yml up -d --build order-service'
             }
         }
     }

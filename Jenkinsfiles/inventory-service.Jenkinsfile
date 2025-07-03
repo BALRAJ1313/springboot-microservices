@@ -30,14 +30,21 @@ pipeline {
             }
         }
 
-        stage('Run Docker Container') {
-            steps {
-                script {
-                    bat 'docker stop inventory-service || exit 0'
-                    bat 'docker rm inventory-service || exit 0'
-                    bat 'docker run -d --name inventory-service -p 8083:8083 inventory-service:latest'
-                }
-            }
-        }
+        stage('Deploy with Docker Compose') {
+              steps {
+                    bat 'docker-compose -f docker-compose.yml up -d --build inventory-service'
+                  }
+             }
+
+//         stage('Run Docker Container') {
+//             steps {
+//                 script {
+//                     bat 'docker stop inventory-service || exit 0'
+//                     bat 'docker rm inventory-service || exit 0'
+//                     bat 'docker run -d --name inventory-service -p 8083:8083 inventory-service:latest'
+//                 }
+//             }
+//         }
+
     }
 }
