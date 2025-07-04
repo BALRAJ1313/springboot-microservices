@@ -3,16 +3,18 @@ pipeline {
 
     environment {
         MAVEN_HOME = tool 'Maven 3.9.6'
+        DOCKERHUB_USER = 'balraj1313'
+        IMAGE_NAME = 'product-service'
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Clone') {
             steps {
                 git branch: 'main', url: 'https://github.com/BALRAJ1313/springboot-microservices.git'
             }
         }
 
-        stage('Build Product Service') {
+        stage('Build') {
             steps {
                 dir('product-service') {
                     bat "${MAVEN_HOME}/bin/mvn clean package -DskipTests"
@@ -20,22 +22,21 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Docker Build & Push') {
             steps {
                 dir('product-service') {
-                    bat 'docker build -t product-service:latest .'
+                    bat "docker build -t %DOCKERHUB_USER%/%IMAGE_NAME%:latest ."
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        bat "echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin"
+                        bat "docker push %DOCKERHUB_USER%/%IMAGE_NAME%:latest"
+                    }
                 }
             }
         }
 
-        stage('Run Container') {
+        stage('Deploy to Kubernetes') {
             steps {
-                bat '''
-                     docker stop product-service || echo already stopped
-                     docker rm product-service || echo already removed
-                     docker run -d --name product-service -p 8081:8081 product-service:latest
-                     docker network connect infra_default product-service || echo already connected
-                    '''
+                bat 'kubectl rollout restart deployment/product-service'
             }
         }
     }
